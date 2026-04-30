@@ -1,0 +1,9 @@
+vars.yml
+
+.vault_pass
+*.vault_pass
+
+*.retry
+
+.DS_Store
+Thumbs.db
