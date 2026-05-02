@@ -1,13 +1,13 @@
 ---
 - name: Install Certbot and Nginx plugin
-  apt:
+  ansible.builtin.apt:
     name:
       - certbot
       - python3-certbot-nginx
     state: present
 
 - name: Obtain Let's Encrypt certificate
-  command: >
+  ansible.builtin.command: >
     certbot --nginx
     --non-interactive
     --agree-tos
@@ -19,7 +19,7 @@
   notify: Reload Nginx
 
 - name: Ensure Certbot auto-renewal timer is enabled
-  service:
+  ansible.builtin.service:
     name: certbot.timer
     state: started
     enabled: true
