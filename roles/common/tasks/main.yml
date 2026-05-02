@@ -1,0 +1,118 @@
+---
+# ---------------------------------------------------------
+# System updates
+# ---------------------------------------------------------
+- name: Update apt cache
+  apt:
+    update_cache: true
+    cache_valid_time: 3600 # only update if cache is older than 1 hour
+
+- name: Upgrade all packages
+  apt:
+    upgrade: safe
+
+- name: Install base packages
+  apt:
+    name:
+      - curl
+      - git
+      - unzip
+      - ufw
+    state: present
+
+- name: Install fail2ban
+  apt:
+    name: fail2ban
+    state: present
+    update_cache: true
+
+# ---------------------------------------------------------
+# Deploy user
+# GitHub Actions SSH user
+# ---------------------------------------------------------
+- name: Create deploy group
+  group:
+    name: deploy
+    state: present
+
+- name: Create deploy user
+  user:
+    name: deploy
+    group: deploy
+    shell: /bin/bash
+    create_home: true
+    state: present
+
+- name: Create deploy user .ssh directory
+  file:
+    path: /home/deploy/.ssh
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: "0700"
+
+- name: Add deploy user authorized key
+  authorized_key:
+    user: deploy
+    state: present
+    key: "{{ deploy_public_key }}"
+
+- name: Create web root directory
+  file:
+    path: /var/www/andrewflanigan.com
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: "0755"
+
+# ---------------------------------------------------------
+# SSH hardening
+# ---------------------------------------------------------
+- name: Harden SSH config
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
+    - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin no" }
+    - { regexp: "^#?X11Forwarding", line: "X11Forwarding no" }
+    - { regexp: "^#?MaxAuthTries", line: "MaxAuthTries 3" }
+  notify: Restart SSH
+
+# ---------------------------------------------------------
+# UFW firewall
+# ---------------------------------------------------------
+- name: Allow SSH through UFW
+  ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+
+- name: Allow HTTP through UFW
+  ufw:
+    rule: allow
+    port: "80"
+    proto: tcp
+
+- name: Allow HTTPS through UFW
+  ufw:
+    rule: allow
+    port: "443"
+    proto: tcp
+
+- name: Enable UFW (default deny incoming)
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+# ---------------------------------------------------------
+# fail2ban — bans IPs with too many failed SSH attempts
+# ---------------------------------------------------------
+- name: Ensure fail2ban is enabled and running
+  service:
+    name: fail2ban
+    state: started
+    enabled: true

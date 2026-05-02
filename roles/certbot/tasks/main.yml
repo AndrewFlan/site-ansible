@@ -1,0 +1,25 @@
+---
+- name: Install Certbot and Nginx plugin
+  apt:
+    name:
+      - certbot
+      - python3-certbot-nginx
+    state: present
+
+- name: Obtain Let's Encrypt certificate
+  command: >
+    certbot --nginx
+    --non-interactive
+    --agree-tos
+    --email {{ certbot_email }}
+    --domains andrewflanigan.com,www.andrewflanigan.com
+    --redirect
+  args:
+    creates: /etc/letsencrypt/live/andrewflanigan.com/fullchain.pem
+  notify: Reload Nginx
+
+- name: Ensure Certbot auto-renewal timer is enabled
+  service:
+    name: certbot.timer
+    state: started
+    enabled: true
