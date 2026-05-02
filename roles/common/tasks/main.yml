@@ -3,16 +3,16 @@
 # System updates
 # ---------------------------------------------------------
 - name: Update apt cache
-  apt:
+  ansible.builtin.apt:
     update_cache: true
     cache_valid_time: 3600 # only update if cache is older than 1 hour
 
 - name: Upgrade all packages
-  apt:
+  ansible.builtin.apt:
     upgrade: safe
 
 - name: Install base packages
-  apt:
+  ansible.builtin.apt:
     name:
       - curl
       - git
@@ -21,7 +21,7 @@
     state: present
 
 - name: Install fail2ban
-  apt:
+  ansible.builtin.apt:
     name: fail2ban
     state: present
     update_cache: true
@@ -30,13 +30,8 @@
 # Deploy user
 # GitHub Actions SSH user
 # ---------------------------------------------------------
-- name: Create deploy group
-  group:
-    name: deploy
-    state: present
-
 - name: Create deploy user
-  user:
+  ansible.builtin.user:
     name: deploy
     group: deploy
     shell: /bin/bash
@@ -44,7 +39,7 @@
     state: present
 
 - name: Create deploy user .ssh directory
-  file:
+  ansible.builtin.file:
     path: /home/deploy/.ssh
     state: directory
     owner: deploy
@@ -52,13 +47,13 @@
     mode: "0700"
 
 - name: Add deploy user authorized key
-  authorized_key:
+  ansible.posix.authorized_key:
     user: deploy
     state: present
     key: "{{ deploy_public_key }}"
 
 - name: Create web root directory
-  file:
+  ansible.builtin.file:
     path: /var/www/andrewflanigan.com
     state: directory
     owner: deploy
@@ -69,11 +64,12 @@
 # SSH hardening
 # ---------------------------------------------------------
 - name: Harden SSH config
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
+    mode: "0600"
   loop:
     - { regexp: "^#?PasswordAuthentication", line: "PasswordAuthentication no" }
     - { regexp: "^#?PermitRootLogin", line: "PermitRootLogin no" }
@@ -85,25 +81,25 @@
 # UFW firewall
 # ---------------------------------------------------------
 - name: Allow SSH through UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "22"
     proto: tcp
 
 - name: Allow HTTP through UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "80"
     proto: tcp
 
 - name: Allow HTTPS through UFW
-  ufw:
+  community.general.ufw:
     rule: allow
     port: "443"
     proto: tcp
 
 - name: Enable UFW (default deny incoming)
-  ufw:
+  community.general.ufw:
     state: enabled
     policy: deny
     direction: incoming
@@ -112,7 +108,7 @@
 # fail2ban — bans IPs with too many failed SSH attempts
 # ---------------------------------------------------------
 - name: Ensure fail2ban is enabled and running
-  service:
+  ansible.builtin.service:
     name: fail2ban
     state: started
     enabled: true
