@@ -24,4 +24,7 @@ Ansible performs these tasks via these Roles:
 
 ## GitHub Workflow/Actions
 
-This repository runs the [ansible-lint](https://github.com/ansible/ansible-lint) action to insure correctly formatted Ansible code is being committed.
+This repository also has a couple GitHub Workflow/Actions setup:
+
+- Runs [ansible-lint](https://github.com/ansible/ansible-lint) on pull requests/merges
+- Runs [Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart-guide) weekly
