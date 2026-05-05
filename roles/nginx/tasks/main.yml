@@ -15,7 +15,7 @@
     src: site.conf.j2
     dest: /etc/nginx/sites-available/andrewflanigan.com
     owner: root
-    ansible.builtin.group: root
+    group: root
     mode: "0644"
   notify: Reload Nginx
 
