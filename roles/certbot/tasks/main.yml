@@ -13,7 +13,7 @@
     --agree-tos
     --email {{ certbot_email }}
     --domains andrewflanigan.com,www.andrewflanigan.com
-    --redirect
+    --keep-until-expiring
   args:
     creates: /etc/letsencrypt/live/andrewflanigan.com/fullchain.pem
   notify: Reload Nginx
