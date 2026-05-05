@@ -1,15 +1,28 @@
-# Initial HTTP config — Certbot will modify this file
-# to add HTTPS and the HTTP→HTTPS redirect automatically
 server {
     listen 80;
     listen [::]:80;
+    server_name andrewflanigan.com www.andrewflanigan.com;
+
+    # Redirect all HTTP to HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
 
     server_name andrewflanigan.com www.andrewflanigan.com;
+
+    # Let's Encrypt certificate paths
+    ssl_certificate /etc/letsencrypt/live/andrewflanigan.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/andrewflanigan.com/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
     root /var/www/andrewflanigan.com;
     index index.html;
 
-    # Serve pre-compressed .gz files from Hugo if available
     gzip_static on;
 
     location / {
@@ -20,8 +33,9 @@ server {
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
     add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    # Cache static assets aggressively
+    # Cache static assets
     location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
         expires 30d;
         add_header Cache-Control "public, no-transform";
