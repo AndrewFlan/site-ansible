@@ -30,6 +30,11 @@
 # Deploy user
 # GitHub Actions SSH user
 # ---------------------------------------------------------
+- name: Create deploy group
+  ansible.builtin.group:
+    name: deploy
+    state: present
+
 - name: Create deploy user
   ansible.builtin.user:
     name: deploy
