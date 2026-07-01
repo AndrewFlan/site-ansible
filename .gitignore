@@ -1,4 +1,5 @@
 vars.yml
+group_vars/all.yml
 
 .vault_pass
 *.vault_pass

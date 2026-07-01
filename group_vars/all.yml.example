@@ -1,0 +1,2 @@
+ansible_user: your_oslogin_username
+gcp_deploy_sa_uid: sa_your_service_account_uid
