@@ -28,3 +28,13 @@ This repository also has a couple GitHub Workflow/Actions setup:
 
 - Runs [ansible-lint](https://github.com/ansible/ansible-lint) on pull requests/merges
 - Runs [Dependabot](https://docs.github.com/en/code-security/tutorials/secure-your-dependencies/dependabot-quickstart-guide) weekly
+
+## Commands
+
+```bash
+# AWS
+ansible-playbook playbook.yml --extra-vars "@vars.yml"
+
+# GCP
+ansible-playbook playbook.yml -i inventory-gcp --extra-vars "@vars.yml"
+```

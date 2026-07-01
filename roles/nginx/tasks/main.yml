@@ -13,7 +13,7 @@
 - name: Write Nginx site config from template
   ansible.builtin.template:
     src: site.conf.j2
-    dest: /etc/nginx/sites-available/andrewflanigan.com
+    dest: "/etc/nginx/sites-available/{{ site_domain.split(',')[0] }}"
     owner: root
     group: root
     mode: "0644"
@@ -21,8 +21,8 @@
 
 - name: Enable site (symlink to sites-enabled)
   ansible.builtin.file:
-    src: /etc/nginx/sites-available/andrewflanigan.com
-    dest: /etc/nginx/sites-enabled/andrewflanigan.com
+    src: "/etc/nginx/sites-available/{{ site_domain.split(',')[0] }}"
+    dest: "/etc/nginx/sites-enabled/{{ site_domain.split(',')[0] }}"
     state: link
   notify: Reload Nginx
 
