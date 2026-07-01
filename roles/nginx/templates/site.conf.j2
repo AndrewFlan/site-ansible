@@ -2,7 +2,7 @@ server {
     listen 80;
     listen [::]:80;
 
-    server_name andrewflanigan.com www.andrewflanigan.com;
+    server_name {{ site_domain | replace(',', ' ') }};
 
     root /var/www/andrewflanigan.com;
     index index.html;
