@@ -1,6 +1,6 @@
 # About
 
-This repository stores the Ansible code to manage the AWS EC2 Instance for my Personal Website [andrewflanigan.com](andrewflanigan.com)
+This repository stores the Ansible code to manage either an AWS EC2 Instance or a GCP Instance for my Personal Website [andrewflanigan.com](andrewflanigan.com)
 
 ## What it does
 
@@ -32,9 +32,5 @@ This repository also has a couple GitHub Workflow/Actions setup:
 ## Commands
 
 ```bash
-# AWS
-ansible-playbook playbook.yml --extra-vars "@vars.yml"
-
-# GCP
-ansible-playbook playbook.yml -i inventory-gcp --extra-vars "@vars.yml"
+ansible-playbook playbook.yml -i inventory-gcp"
 ```
