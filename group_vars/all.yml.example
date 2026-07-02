@@ -1,0 +1,9 @@
+ansible_user: Ansible User
+ansible_ssh_private_key_file: "Path to Private Key"
+certbot_email: "Email Address"
+
+# GCP Specific
+gcp_deploy_sa_uid: Deploy User ID
+
+# AWS Specific
+deploy_public_key = "Public Key"

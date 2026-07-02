@@ -56,6 +56,7 @@
     user: deploy
     state: present
     key: "{{ deploy_public_key }}"
+  when: deploy_public_key is defined
 
 - name: Create web root directory
   ansible.builtin.file:
@@ -149,3 +150,18 @@
     - /tmp/awscliv2.zip
     - /tmp/aws
   when: cloud_provider == "aws"
+
+# ---------------------------------------------------------
+# GCP OS Login - deploy SA sudo access
+# ---------------------------------------------------------
+- name: Configure sudoers for OS Login deploy service account
+  ansible.builtin.copy:
+    dest: /etc/sudoers.d/oslogin-deploy
+    content: |
+      Defaults:{{ gcp_deploy_sa_uid }} !requiretty
+      {{ gcp_deploy_sa_uid }} ALL=(ALL) NOPASSWD: /snap/bin/gcloud
+    owner: root
+    group: root
+    mode: "0440"
+    validate: "visudo -cf %s"
+  when: cloud_provider == "gcp"
